@@ -1,45 +1,52 @@
 import tkinter as tk
 from tkinter import messagebox
 
-
+# Check for a winner by examining all winning combinations
 def check_winner():
-    for combo in [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]:
-        if buttons[combo[0]]["text"] == buttons[combo[1]]["text"] == buttons[combo[2]]["text"] != "":
-            buttons[combo[0]].config(bg="green")
-            buttons[combo[1]].config(bg="green")
-            buttons[combo[2]].config(bg="green")
-            messagebox.showinfo("tic-tac-toe",f"player {buttons[combo[0]]['text']} wins!")
+    global winner
+    for combo in [[0, 1, 2], [3, 4, 5], [6, 7, 8],  # Rows
+                  [0, 3, 6], [1, 4, 7], [2, 5, 8],  # Columns
+                  [0, 4, 8], [2, 4, 6]]:           # Diagonals
+        if (buttons[combo[0]]["text"] == buttons[combo[1]]["text"] == 
+            buttons[combo[2]]["text"] != ""):
+            winner = True
+            # Highlight winning combination
+            for i in combo:
+                buttons[i].config(bg="green")
+            messagebox.showinfo("Tic-Tac-Toe", f"Player {buttons[combo[0]]['text']} wins!")
             root.quit()
 
+# Handle button clicks
 def button_click(index):
-  if buttons[index]["text"] == "" and not winner:
-    buttons[index]["text"] = current_player
-    check_winner()
-    toggle_player()
+    global current_player
+    if buttons[index]["text"] == "" and not winner:  # Only proceed if spot is empty and no winner
+        buttons[index]["text"] = current_player
+        check_winner()
+        if not winner:  # Toggle player only if no winner yet
+            toggle_player()
 
+# Switch between players
 def toggle_player():
     global current_player
-    current_player == "X" if current_player == "o" else "o"
-    label.config(text=f"player {current_player}'s turn")
-    
+    current_player = "X" if current_player == "O" else "O"
+    label.config(text=f"Player {current_player}'s turn")
+
+# Set up the main window
 root = tk.Tk()
 root.title("Tic-Tac-Toe")
 
-buttons = [tk.Button(root, text="", font=("normal",25), height=6, width=2, command=lambda i=i:button_click(i)) for i in range(9)]
+# Create 9 buttons in a 3x3 grid
+buttons = [tk.Button(root, text="", font=("normal", 25), width=2, height=6, 
+                     command=lambda i=i: button_click(i)) for i in range(9)]
 
-for i,button in enumerate(buttons):
-    button.grid(row=i //3,column=i % 3)
+for i, button in enumerate(buttons):
+    button.grid(row=i // 3, column=i % 3)
 
-    
+# Initialize game state
 current_player = "X"
 winner = False
-label = tk.Label(root, text=f"player {current_player}'s turn",font=("normal",20))
-label.grid(rows=3, column=0, columnspan=3)
+label = tk.Label(root, text=f"Player {current_player}'s turn", font=("normal", 20))
+label.grid(row=3, column=0, columnspan=3)
 
-
-current_player = "O"
-winner = False
-label = tk.Label(root, text=f"player {current_player}'s turn",font=("normal",20))
-label.grid(rows=3, column=0, columnspan=3)
-
+# Start the game
 root.mainloop()
